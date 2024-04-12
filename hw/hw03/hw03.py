@@ -27,8 +27,12 @@ def num_eights(n):
     ...       ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'For', 'While'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    if n == 0:
+        return 0
+    if n % 10 == 8:
+        return 1 + num_eights(n // 10)
+    else:
+        return num_eights(n // 10)
 
 def digit_distance(n):
     """Determines the digit distance of n.
@@ -49,8 +53,9 @@ def digit_distance(n):
     ...       ['For', 'While'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    if n // 10 == 0:
+        return 0
+    return abs(n % 10 - (n // 10) % 10) + digit_distance(n // 10)
 
 def interleaved_sum(n, odd_func, even_func):
     """Compute the sum odd_func(1) + even_func(2) + odd_func(3) + ..., up
@@ -71,7 +76,12 @@ def interleaved_sum(n, odd_func, even_func):
     >>> check(HW_SOURCE_FILE, 'interleaved_sum', ['While', 'For', 'Mod']) # ban loops and %
     True
     """
-    "*** YOUR CODE HERE ***"
+    if n == 0:
+        return 0 
+    if n & 1 == 0:
+        return even_func(n) + interleaved_sum(n - 1, odd_func, even_func)
+    else:
+        return odd_func(n) + interleaved_sum(n - 1, odd_func, even_func)
 
 
 def next_larger_coin(coin):
@@ -125,8 +135,15 @@ def count_coins(total):
     >>> check(HW_SOURCE_FILE, 'count_coins', ['While', 'For'])
     True
     """
-    "*** YOUR CODE HERE ***"
-
+    def count_coins_helper(total, coin):
+        if total == 0:
+            return 1
+        elif coin is None or total < 0:
+            return 0
+        else:
+            return count_coins_helper(total - coin, coin) + count_coins_helper(total, next_larger_coin(coin))
+    return count_coins_helper(total, 1)
+    
 
 def print_move(origin, destination):
     """Print instructions to move a disk."""
@@ -160,7 +177,14 @@ def move_stack(n, start, end):
     Move the top disk from rod 1 to rod 3
     """
     assert 1 <= start <= 3 and 1 <= end <= 3 and start != end, "Bad start/end"
-    "*** YOUR CODE HERE ***"
+    def move_helper(n, src, via, dst):
+        if n == 0:
+            return
+        else:
+            move_helper(n - 1, src, dst, via)
+            print_move(src, dst)
+            move_helper(n - 1, via, src, dst)
+    move_helper(n, start, 6 - start - end, end) 
 
 
 from operator import sub, mul
@@ -176,5 +200,19 @@ def make_anonymous_factorial():
     ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
     True
     """
-    return 'YOUR_EXPRESSION_HERE'
+    from operator import sub, mul
+
+def make_anonymous_factorial():
+    """Return the value of an expression that computes factorial.
+
+    >>> make_anonymous_factorial()(5)
+    120
+    >>> from construct_check import check
+    >>> # ban any assignments or recursion
+    >>> check(HW_SOURCE_FILE, 'make_anonymous_factorial',
+    ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
+    True
+    """
+    return (lambda f: lambda n: f(f, n))(lambda f, n: n if n == 1 else (n * f(f, n - 1)))
+
 
