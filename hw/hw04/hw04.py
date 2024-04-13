@@ -20,7 +20,11 @@ def deep_map(f, s):
     >>> s3 is s2[1]
     True
     """
-    "*** YOUR CODE HERE ***"
+    for i in range(len(s)):
+        if not isinstance(s[i], list):
+            s[i] = f(s[i])
+        else:
+            deep_map(f, s[i])
 
 
 HW_SOURCE_FILE=__file__
@@ -68,12 +72,12 @@ def end(s):
 def planet(mass):
     """Construct a planet of some mass."""
     assert mass > 0
-    "*** YOUR CODE HERE ***"
+    return ["planet", mass]
 
 def mass(p):
     """Select the mass of a planet."""
     assert is_planet(p), 'must call mass on a planet'
-    "*** YOUR CODE HERE ***"
+    return p[1]
 
 def is_planet(p):
     """Whether p is a planet."""
@@ -100,6 +104,7 @@ def total_mass(m):
     9
     """
     if is_planet(m):
+        print(f"DEBUG: cur_mass = {mass(m)}")
         return mass(m)
     else:
         assert is_mobile(m), "must get total mass of a mobile or a planet"
@@ -125,7 +130,15 @@ def balanced(m):
     >>> check(HW_SOURCE_FILE, 'balanced', ['Index'])
     True
     """
-    "*** YOUR CODE HERE ***"
+    if is_planet(m):
+        return True
+
+    l_arm, r_arm = left(m), right(m)
+    l_part, r_part = end(l_arm), end(r_arm)
+    l_len, r_len = length(l_arm), length(r_arm) 
+
+    return total_mass(l_part) * l_len == total_mass(r_part) * r_len and balanced(l_part) and balanced(r_part)
+    
 
 
 HW_SOURCE_FILE=__file__
@@ -140,7 +153,10 @@ def max_path_sum(t):
     >>> max_path_sum(t2) # 5, 2, 10
     17
     """
-    "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+        return label(t)
+    else:
+        return max([max_path_sum(branch) for branch in branches(t)]) + label(t)
 
 
 
