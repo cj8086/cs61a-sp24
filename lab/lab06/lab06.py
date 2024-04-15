@@ -296,16 +296,8 @@ class ChangeMachine:
 
     def change(self, coin):
         """Return change for coin, removing the result from self.coins."""
+        self.coins[coin] = 1 + self.coins.get(coin, 0)
         change_for_coin = make_change(coin, self.coins)
-        if change_for_coin == None:
-            return [coin]
-
-        for denomination in change_for_coin:
-            self.coins[denomination] -= 1
-            if self.coins[denomination] == 0:
-                del self.coins[denomination]
-
-        self.coins.setdefault(coin, 0) 
-        self.coins[coin] += 1
+        for c in change_for_coin:
+            self.coins = remove_one(self.coins, c)
         return change_for_coin
-
