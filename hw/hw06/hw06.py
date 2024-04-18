@@ -47,7 +47,34 @@ class VendingMachine:
     >>> w.vend()
     'Here is your soda.'
     """
-    "*** YOUR CODE HERE ***"
+    def __init__(self, product, price):
+        self.product = product
+        self.price = price
+        self.stock = 0
+        self.balance = 0
+
+    def restock(self, quantity):
+        self.stock += quantity
+        return f'Current {self.product} stock: {self.stock}'
+
+    def add_funds(self, amount):
+        if self.stock == 0:
+            return f'Nothing left to vend. Please restock. Here is your ${amount}.'
+        self.balance += amount
+        return f'Current balance: ${self.balance}'
+
+    def vend(self):
+        if self.stock == 0:
+            return 'Nothing left to vend. Please restock.'
+        if self.balance < self.price:
+            return f'Please add ${self.price - self.balance} more funds.'
+        change = self.balance - self.price
+        self.balance = 0
+        self.stock -= 1
+        if change > 0:
+            return f'Here is your {self.product} and ${change} change.'
+        else:
+            return f'Here is your {self.product}.'
 
 
 def store_digits(n):
@@ -67,7 +94,14 @@ def store_digits(n):
     >>> cleaned = re.sub(r"#.*\\n", '', re.sub(r'"{3}[\s\S]*?"{3}', '', inspect.getsource(store_digits)))
     >>> print("Do not use str or reversed!") if any([r in cleaned for r in ["str", "reversed"]]) else None
     """
-    "*** YOUR CODE HERE ***"
+    cur = n
+    lnk = Link(cur % 10)
+    cur = cur // 10
+    while cur > 0:
+        last_digit = cur % 10
+        lnk = Link(last_digit, lnk)
+        cur = cur // 10
+    return lnk
 
 
 def deep_map_mut(func, lnk):
@@ -89,7 +123,15 @@ def deep_map_mut(func, lnk):
     >>> print(link1)
     <9 <16> 25 36>
     """
-    "*** YOUR CODE HERE ***"
+    if lnk is Link.empty:
+        return
+    if isinstance(lnk.first, Link):
+        deep_map_mut(func, lnk.first)
+    else:
+        lnk.first = func(lnk.first)
+    deep_map_mut(func, lnk.rest)
+
+    
 
 
 def two_list(vals, counts):
@@ -110,8 +152,20 @@ def two_list(vals, counts):
     >>> c
     Link(1, Link(1, Link(3, Link(3, Link(2)))))
     """
-    "*** YOUR CODE HERE ***"
+    lnk = Link(vals[0], Link.empty)
+    cur = lnk
+    for _ in range(counts[0] - 1):
+        cur.rest = Link(vals[0], Link.empty)
+        cur = cur.rest
+    for i in range(1 ,len(vals)):
+        for _ in range(counts[i]):
+            cur.rest = Link(vals[i], Link.empty)
+            cur = cur.rest
+    return lnk
 
+
+
+        
 
 class Link:
     """A linked list.
